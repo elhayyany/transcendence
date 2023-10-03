@@ -1,0 +1,154 @@
+.nav {
+    position: fixed;
+    z-index: 2;
+}
+
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 2em;
+}
+
+.menu-toggle {
+    cursor: pointer;
+}
+
+.nav-overlay {
+    position: fixed;
+    background: #18181c;
+    z-index: -2;
+    top: -100%;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    padding: 4em;
+    transition: all 2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hamBox {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: 0.3s ease;
+    padding: 2.4em;
+}
+
+.hamBox:hover {
+    background: #2a2a2f;
+    background: #fff;
+}
+
+.hamBoxOpen {
+    background: #2a2a2f;
+}
+
+.lineTop,
+.lineBottom {
+    margin: 0 auto;
+    position: absolute;
+    display: block;
+    width: 24px;
+    height: 2px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.5);
+    left: 0;
+    right: 0;
+    transform: rotate(0deg);
+    transition: all 0.4s;
+}
+
+.nav:hover .lineTop,
+.nav:hover .lineBottom {
+    background: var(--bg);
+}
+
+.lineTop {
+    top: 2.2em;
+}
+
+.lineBottom {
+    bottom: 2.2em;
+}
+
+.lineTop.spin {
+    top: 2.35em;
+    transform: rotate(135deg);
+    background: #fff;
+}
+
+.lineBottom.spin {
+    top: 2.35em;
+    transform: rotate(225deg);
+    background: #fff;
+}
+
+ul.nav-links {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-column-gap: 5em;
+}
+
+ul.nav-links li {
+    list-style: none;
+    position: relative;
+}
+
+ul.nav-links li a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 5em;
+    font-weight: 900;
+    position: relative;
+    text-transform: uppercase;
+    top: 0;
+    transition: all 2s cubic-bezier(0.16, 1, 0.3, 1);
+    line-height: 100%;
+}
+
+.nav-item-wrapper:after {
+    content: "";
+    position: absolute;
+    top: 120px;
+    left: -10%;
+    width: 120%;
+    height: 100%;
+    margin: 0 auto;
+}
+
+.nav-item::before {
+    background: hsl(0, 100%, 59%);
+    content: "";
+    inset: 0;
+    position: absolute;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.5s ease-in-out;
+    z-index: -1;
+}
+
+.nav-item:hover::before {
+    transform: scaleX(1);
+    transform-origin: left;
+    font-size: 5em;
+    font-weight: 900;
+}
+
+@media (max-width: 900px) {
+    ul.nav-links li a {
+        font-size: 5em;
+    }
+}

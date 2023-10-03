@@ -1,0 +1,166 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "postgresqlExtensions"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email     String  @unique
+  password  String?
+  token     String?
+  username  String @unique
+  firstname String?
+  lastname  String?
+  photo     String?
+  bio       String?
+  online    Boolean @default(false)
+  pendingmessages Int @default(0)
+  pendingnotifications Int @default(0)
+
+  wins          Int @default(0)
+  losses        Int @default(0)
+  games         game[]
+
+  notifications Notification[]
+  roomUsers     RoomUser[]
+  roomAdmins    RoomAdmin[] // Rooms where the user is an admin
+  messages      Message[]
+  chats         ChatRoom[]
+
+  friends  User[] @relation("Friends")
+  friendOf User[] @relation("Friends")
+
+
+  blockedUsers User[] @relation("BlockedUsers")
+  blockedBy    User[] @relation("BlockedUsers")
+
+  outgoingFriendRequests FriendRequest[] @relation("OutgoingFriendRequests")
+  incomingFriendRequests FriendRequest[] @relation("IncomingFriendRequests")
+
+  isTowFactorAuthEnabled Boolean @default(false)
+  twoFactorAuthSecret    String?
+
+}
+
+model ChatRoom {
+  id        Int         @id @default(autoincrement())
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  name      String?
+  password  String?
+  photo     String?
+  isPrivate Boolean     @default(false)
+  isdm      Boolean     @default(false)
+  senderID  Int?
+  receiverID Int?
+  roomUsers RoomUser[]
+  messages  Message[]
+  admins    RoomAdmin[]
+  members   User[]
+
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  content   String
+  sender    User     @relation(fields: [senderId], references: [id])
+  senderId  Int
+  room      ChatRoom @relation(fields: [roomId], references: [id])
+  roomId    Int
+}
+
+model RoomUser {
+  id     Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user   User     @relation(fields: [userId], references: [id])
+  userId Int
+  room   ChatRoom @relation(fields: [roomId], references: [id])
+  roomId Int
+}
+
+model RoomAdmin {
+  id     Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user   User     @relation(fields: [userId], references: [id])
+  userId Int
+  room   ChatRoom @relation(fields: [roomId], references: [id])
+  roomId Int
+}
+
+model FriendRequest {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sender   User @relation("OutgoingFriendRequests", fields: [senderId], references: [id])
+  senderId Int
+
+  receiver   User @relation("IncomingFriendRequests", fields: [receiverId], references: [id])
+  receiverId Int
+
+  status FriendStatus @default(NONE)
+}
+
+enum FriendStatus {
+  NONE
+  FRIEND
+  BLOCKED
+  PENDING
+}
+
+model FriendShip {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user1   Int
+  user2   Int
+
+  status FriendStatus @default(NONE)
+
+}
+
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+  from   Int
+  data  Json @default("{}")
+  type String
+  read Boolean @default(false)
+}
+
+model game {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  players User[]
+
+  player1Id Int
+  player2Id Int
+
+  player1Score Int
+  player2Score Int
+
+  type String?
+}

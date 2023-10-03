@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  devdb:
+    container_name: database
+    image: postgres:13-alpine
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "123"
+      POSTGRES_DB: nest
+
+  nginx:
+    build: ./nginx
+    ports:
+      - 8000:80
+      - 3000:80
+    restart: always
+    depends_on:
+      - client
+
+  client:
+    build: ./Transcendence
+    depends_on:
+      - api
+
+  api:
+    depends_on:
+      - devdb
+    build: ./transcendence
+    # ports:
+    #   - 3000:3000
+

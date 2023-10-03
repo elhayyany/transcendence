@@ -1,0 +1,44 @@
+.add-channel {
+    background: rgba(16, 16, 16, 0.5);
+    border: .1vw solid rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(2px);
+    border-radius: 1vw;
+}
+
+.input-container, .check-span {
+	background: rgba(217, 217, 217, 0.4);
+}
+
+.overlay {
+	width: 100vw;
+	height: 100vh;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	position: fixed;
+}
+
+.overlay {
+	background: rgba(16, 16, 16, 0.75);
+	backdrop-filter: blur(1.5px);
+	z-index: 1;
+}
+
+.pop-up-container {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.uploaded {
+	background: rgba(217, 217, 217, 0.4);
+	border: .1vw solid rgba(255, 255, 255, 0.35);
+	backdrop-filter: blur(2px);
+	border-radius: .5vw;
+}
+
+.uploaded:hover {
+	background: rgba(137, 132, 132, 0.4);
+}

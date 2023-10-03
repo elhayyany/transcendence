@@ -1,0 +1,129 @@
+.container-1,
+.container-2 {
+    background: rgba(255, 255, 255, 0.05);
+    border: 0.1vw solid rgba(255, 255, 255, 0.15);
+    border-radius: 0.5vw;
+}
+
+.child-container-1,
+.child-container-2 {
+    display: flex;
+}
+
+.status {
+    border: 0.2vw solid var(--bg);
+}
+
+.input-container,
+.check-span {
+    background: rgba(217, 217, 217, 0.4);
+}
+
+.custom-textarea {
+    border: none;
+    outline: none;
+    background: none;
+}
+
+:root {
+    --switches-bg-color: rgba(217, 217, 217, 0.4);
+    --switches-label-color: white;
+    --switch-bg-color: rgba(217, 217, 217, 0.5);
+    --switch-text-color: rgba(217, 217, 217, 0.4);
+}
+
+.switches-container {
+    width: 10vw;
+    position: relative;
+    display: flex;
+    padding: 0;
+    position: relative;
+    background: var(--switches-bg-color);
+    line-height: 2.5vw;
+    border-radius: 0.8vw;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: hidden;
+}
+
+/* input (radio) for toggling. hidden - use labels for clicking on */
+.switches-container input {
+    visibility: hidden;
+    position: absolute;
+    top: 0;
+}
+
+/* labels for the input (radio) boxes - something to click on */
+.switches-container label {
+    width: 50%;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+    cursor: pointer;
+    color: var(--switches-label-color);
+    font-size: 0.8vw;
+    font-weight: bold;
+}
+
+@media not all and (min-width: 640px) {
+    .switches-container {
+        width: 20vw;
+        line-height: 3.5vw;
+    }
+    .switches-container label {
+        font-size: 2vw;
+    }
+}
+
+@media not all and (min-width: 768px) {
+    .switches-container {
+        width: 15vw;
+        line-height: 3vw;
+    }
+    .switches-container label {
+        font-size: 1.5vw;
+    }
+}
+
+/* switch highlighters wrapper (sliding left / right) 
+    - need wrapper to enable the even margins around the highlight box
+*/
+.switch-wrapper {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+    z-index: 1;
+    transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+    background: var(--switch-bg-color);
+    transition: transform 0.5s;
+    overflow: hidden;
+}
+
+/* slide the switch box from right to left */
+.switches-container input:nth-of-type(1):checked ~ .switch-wrapper {
+    transform: translateX(0%);
+}
+
+/* slide the switch box from left to right */
+.switches-container input:nth-of-type(2):checked ~ .switch-wrapper {
+    transform: translateX(100%);
+}
+
+/* toggle the switch box labels - first checkbox:checked - show first switch div */
+.switches-container
+    input:nth-of-type(1):checked
+    ~ .switch-wrapper
+    .switch
+    div:nth-of-type(1) {
+    opacity: 1;
+}
+
+/* toggle the switch box labels - second checkbox:checked - show second switch div */
+.switches-container
+    input:nth-of-type(2):checked
+    ~ .switch-wrapper
+    .switch
+    div:nth-of-type(2) {
+    opacity: 1;
+}
