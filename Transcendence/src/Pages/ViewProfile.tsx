@@ -50,7 +50,7 @@ const ViewProfile = () => {
         if (id == null) id = "0";
         let userid: number = +id;
         await axios.get(
-            `http://localhost:8000/api/users/byid?id=${id}`, {
+            `/api/users/byid?id=${id}`, {
                 withCredentials: true,
             }
         ).then((res) => {
@@ -77,7 +77,7 @@ const ViewProfile = () => {
         });
         // get user games
         await axios.get(
-            `http://localhost:8000/api/users/usergames?id=${id}`, {
+            `/api/users/usergames?id=${id}`, {
                 withCredentials: true
             }
         ).then((res) => {
@@ -91,7 +91,7 @@ const ViewProfile = () => {
             isDm: true,
             receiver: user?.id,
         };
-         await axios.post("http://localhost:8000/api/chat/newdm", data, {
+         await axios.post("/api/chat/newdm", data, {
             withCredentials: true,
         });
         navigate("/chat");
@@ -110,7 +110,7 @@ const ViewProfile = () => {
             if (map.has(game.player1Id) === false) {
                 promises.push(
                     axios.get(
-                        `http://localhost:8000/api/users/userinfos?id=${game.player1Id}`,
+                        `/api/users/userinfos?id=${game.player1Id}`,
                         { withCredentials: true }
                     )
                 );
@@ -118,7 +118,7 @@ const ViewProfile = () => {
             if (map.has(game.player2Id) === false) {
                 promises.push(
                     axios.get(
-                        `http://localhost:8000/api/users/userinfos?id=${game.player2Id}`,
+                        `/api/users/userinfos?id=${game.player2Id}`,
                         { withCredentials: true }
                     )
                 );
@@ -139,7 +139,7 @@ const ViewProfile = () => {
 
     const addFriend = async () => {
         await axios.post(
-            "http://localhost:8000/api/users/sendfriendrequest",
+            "/api/users/sendfriendrequest",
             { receiver: user?.id },
             { withCredentials: true }
         );

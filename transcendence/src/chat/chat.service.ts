@@ -100,7 +100,7 @@ export class ChatService {
           id: chatRoom.id,
         },
         data:{
-          photo: "http://localhost:3000/" + chatRoom.id + "room.png",
+          photo: "http://api/" + chatRoom.id + "room.png",
         }
       })
       const roomUser = await this.prisma.roomUser.create({

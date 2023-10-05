@@ -33,9 +33,12 @@ export class AuthController {
   @UseGuards(AuthGuard('42'))
   async callback(@Req() req, @Res() res) {
     const r = await this.authService.SignIn(req);
+    console.log("HIIII")
+    console.log('heeererjekdjaskl;s');
+
     await res.cookie('jwt', r.token, {
         domain: 'localhost', // Set to your domain
-        path: '/api',
+        path: '/',
         httpOnly: true,
         secure: true, // Set to true for HTTPS
         //sameSite: 'Lax', // Adjust based on your requirements
@@ -61,7 +64,7 @@ export class GoogleAuthController {
       httpOnly: true,
       secure: true,
     })
-    res.redirect("http://localhost:8000/");
+    res.redirect("http://clinet/");
     // console.log({redirected: r});
   }
 }
@@ -81,7 +84,7 @@ export class LogoutController {
     //! close all sockets
     await this.events.handleDisconnect(req.user.id);
 
-    res.redirect("http://localhost:8000/home");
+    res.redirect("http://locallhost:8000/home");
     
   }
 }

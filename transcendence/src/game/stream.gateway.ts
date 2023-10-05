@@ -37,11 +37,16 @@ interface Room {
 }
 
 const socketConfig = {
-	// cors: {
-	// 	origin: ['http://localhost:5173', 'http://10.14.8.7:5173', 'http://10.14.8.7:3000'],
-	// 	credentials: true
-	// },
-	namespace: 'stream'
+	cors: {
+    origin: [
+      'http://client',
+      'http://localhost:3000',
+      'http://localhost:8000',
+      'http://nginx:80',
+    ],
+      credentials: true,
+	},
+	namespace: 'stream',
 };
 
 

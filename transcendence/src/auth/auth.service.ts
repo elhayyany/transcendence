@@ -122,7 +122,7 @@ export class AuthService {
           id: user.id,
         },
         data:{
-          photo: "http://localhost:3000/" + user.id + ".png",
+          photo: "http://api/" + user.id + ".png",
         }
       })
       return user;

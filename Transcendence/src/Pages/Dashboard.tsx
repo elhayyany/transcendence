@@ -83,7 +83,7 @@ const Dashboard = () => {
 
     useEffect(() => {
         setSocket(
-            io("http://localhost:8000/api/stream", { withCredentials: true })
+            io("/api/stream", { withCredentials: true })
         );
     }, []);
 
@@ -91,11 +91,11 @@ const Dashboard = () => {
         try {
             const [res1, res2] = await Promise.all([
                 axios.get(
-                    `http://localhost:8000/api/users/userinfos?id=${room.playerOneId}`,
+                    `/api/users/userinfos?id=${room.playerOneId}`,
                     { withCredentials: true }
                 ),
                 axios.get(
-                    `http://localhost:8000/api/users/userinfos?id=${room.playerTwoId}`,
+                    `/api/users/userinfos?id=${room.playerTwoId}`,
                     { withCredentials: true }
                 ),
             ]);
@@ -158,7 +158,7 @@ const Dashboard = () => {
     useEffect(() => {
         try {
             axios
-                .get("http://localhost:8000/api/users/me/friends", {
+                .get("/api/users/me/friends", {
                     withCredentials: true,
                 })
                 .then((res) => {
@@ -177,7 +177,7 @@ const Dashboard = () => {
         const fetshData = async () => {
             try {
                 const res = await axios.get(
-                    `http://localhost:8000/api/users/search/all?query=${query}`,
+                    `/api/users/search/all?query=${query}`,
                     { withCredentials: true }
                 );
                 setUsers(res.data);

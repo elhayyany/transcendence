@@ -8,10 +8,10 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { connect } from 'http2';
 import { EventsGateway } from 'src/events/events.gateway';
 @WebSocketGateway({
-  // cors: {
-  //   origin: ['http://localhost:8000', 'http://localhost:3000', 'http://127.0.0.1:5173', 'http://nginx:80'],
-  //   credentials: true,
-  // },
+  cors: {
+    origin: ['http://client', 'http://localhost:3000', 'http://localhost:8000', 'http://nginx:80'],
+    credentials: true,
+  },
 })
 export class ChatGateway {
   constructor(private readonly chatService: ChatService, private prisma: PrismaService, private events:EventsGateway) { }

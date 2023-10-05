@@ -9,10 +9,6 @@ import * as jwt from 'jsonwebtoken';
 import { Global, Injectable } from '@nestjs/common';
 
 const socketConfig = {
-  // cors: {
-  //   origin: ['http://client:5173', 'http://localhost:3000', 'http://localhost:5173', 'http://localhost:5173'],
-  //   credentials: true,
-  // },
   namespace: 'user',
 };
 

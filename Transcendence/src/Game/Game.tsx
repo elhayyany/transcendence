@@ -56,7 +56,7 @@ function Game() {
     };
 
     useEffect(() => {
-        setSocket(io("http://localhost:8000/api/game", { withCredentials: true }));
+        setSocket(io("/api/game", { withCredentials: true }));
     }, []);
 
     useEffect(() => {
@@ -77,7 +77,7 @@ function Game() {
 
             axios
                 .get(
-                    `http://localhost:8000/api/users/userinfos?id=${obj.playerOneId}`,
+                    `/api/users/userinfos?id=${obj.playerOneId}`,
                     { withCredentials: true }
                 )
                 .then((res) => {
@@ -89,7 +89,7 @@ function Game() {
 
             axios
                 .get(
-                    `http://localhost:8000/api/users/userinfos?id=${obj.playerTwoId}`,
+                    `/api/users/userinfos?id=${obj.playerTwoId}`,
                     { withCredentials: true }
                 )
                 .then((res) => {

@@ -5,7 +5,7 @@
     integrity="sha384-KAZ4DtjNhLChOB/hxXuKqhMLYvx3b5MlT55xPEiNmREKRzeEm+RVPlTnAn0ajQNs"
     crossorigin="anonymous"></script>
   <script>
-    const socket = io('http://localhost:8000/api/user');
+    const socket = io('http://api/user');
     socket.on('connect', function () {
       console.log('Connected');
 

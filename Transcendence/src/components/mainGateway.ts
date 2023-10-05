@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:8000/api/user", {
+const socket = io("/api/user", {
     withCredentials: true,
 });
 const setOnline = async () => {

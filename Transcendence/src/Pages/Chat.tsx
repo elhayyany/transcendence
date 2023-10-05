@@ -76,7 +76,7 @@ const Chat = () => {
             const formData = new FormData();
             formData.append("file", currentChannel.img);
             formData.append("name", currentChannel.name);
-            await axios.post("http://localhost:8000/api/chat/new", formData, {
+            await axios.post("/api/chat/new", formData, {
                 withCredentials: true,
             });
         } catch (error) {
@@ -95,7 +95,7 @@ const Chat = () => {
     async function getRoomChannels() {
         try {
             const response = await axios.get(
-                "http://localhost:8000/api/users/me/chatrooms",
+                "/api/users/me/chatrooms",
                 {
                     withCredentials: true,
                 }
@@ -108,7 +108,7 @@ const Chat = () => {
     async function getChannelmsg(id: any) {
         try {
             const res = await axios.get(
-                "http://localhost:8000/api/chat/getroomsmgs?id=" + id,
+                "/api/chat/getroomsmgs?id=" + id,
                 {
                     withCredentials: true,
                 }
@@ -120,7 +120,7 @@ const Chat = () => {
     };
     const getimg = async (roomid: number) => {
         const res = await axios.get(
-            "http://localhost:8000/api/" + roomid + "room.png",
+            "/api/" + roomid + "room.png",
             {
                 withCredentials: true,
             }
@@ -128,12 +128,12 @@ const Chat = () => {
         return res.data;
     };
     const getuserinfo = async (id: number) => {
-        await axios.get("http://localhost:8000/api/users/" + id).then((res) => {
+        await axios.get("/api/users/" + id).then((res) => {
             return res.data;
         });
     };
     async function getdminfos(id: number) {
-        const res = await axios.get("http://localhost:8000/api/chat/getdminfos?id=" + id, {
+        const res = await axios.get("/api/chat/getdminfos?id=" + id, {
             withCredentials: true,
         })
         const room = {
@@ -193,7 +193,7 @@ const Chat = () => {
                         messages = [...messages, { message: msgs[i].content, isSentByMe: true,  img: ""}]
                     }
                     else {
-                        messages = [...messages, { message: msgs[i].content, isSentByMe: false, img: "http://localhost:8000/api/" + msgs[i].senderId + ".png" }]
+                        messages = [...messages, { message: msgs[i].content, isSentByMe: false, img: "/api/" + msgs[i].senderId + ".png" }]
                     }
                 }
                 setMessages(messages);
@@ -204,7 +204,7 @@ const Chat = () => {
 
     const socketRef = useRef<Socket | null>(null);
     async function whoami() {
-        const me = await axios.get("http://localhost:8000/api/users/me", {
+        const me = await axios.get("/api/users/me", {
             withCredentials: true,
         });
         return me.data;
@@ -219,7 +219,7 @@ const Chat = () => {
     };
     useEffect(() => {
         if (socketRef.current === null) {
-            socketRef.current = io("http://localhost:8000/api/", {
+            socketRef.current = io("/api/", {
                 withCredentials: true,
             });
         }
@@ -230,7 +230,7 @@ const Chat = () => {
                 {
                     message: dto[0].message,
                     isSentByMe: false,
-                    img: "http://localhost:8000/api/" + dto[0].senderId + ".png",
+                    img: "/api/" + dto[0].senderId + ".png",
                 },
             ]);
         });

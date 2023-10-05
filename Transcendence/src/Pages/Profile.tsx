@@ -31,7 +31,7 @@ const Profile = () => {
 
     useEffect(() => {
         axios
-            .get("http://localhost:8000/api/users/me", { withCredentials: true })
+            .get("/api/users/me", { withCredentials: true })
             .then((res) => {
                 const data: Data = {
                     photo: res.data.photo,
@@ -135,7 +135,7 @@ const Profile = () => {
         
         console.log(body);
         await axios.post(
-            "http://localhost:8000/api/users/me",
+            "/api/users/me",
             body,
             { withCredentials: true }
         );
