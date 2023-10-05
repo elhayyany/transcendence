@@ -10,7 +10,7 @@ COPY package*.json ./
 
 RUN npm install
 
-# COPY . .
+COPY . .
 
 RUN echo "sleep 10 && npx prisma migrate dev --name init && npm run start:dev" > init.sh
 # RUN echo "npm run start:dev" > start.sh

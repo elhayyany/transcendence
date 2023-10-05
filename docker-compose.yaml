@@ -24,8 +24,6 @@ services:
     build: ./Transcendence
     depends_on:
       - api
-    volumes:
-      - ./transcendence:/app
     
 
   api:
