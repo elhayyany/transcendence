@@ -84,8 +84,7 @@ export class LogoutController {
     //! close all sockets
     await this.events.handleDisconnect(req.user.id);
 
-    res.redirect("http://locallhost:8000/home");
-    
+    res.redirect("http://locallhost:8000/");
   }
 }
 

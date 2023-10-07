@@ -4,7 +4,7 @@ import { UserService } from './user.service';
 import { FillRequestDto, FriendRequestDto, UpdateNotificationsDto, UserUpdateDto } from 'src/dto';
 import { promises } from 'dns';
 
-// @UseGuards(JwtGard)
+@UseGuards(JwtGard)
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}

@@ -6,10 +6,6 @@ EXPOSE 5757
 RUN mkdir -p /app
 WORKDIR /app
 
-COPY package*.json ./
+# RUN chmod +x init.sh
+CMD ["sh", "./init.sh"]
 
-RUN npm install
-
-COPY . .
-
-CMD [ "npm", "run", "dev"]

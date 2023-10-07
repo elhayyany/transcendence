@@ -10,6 +10,7 @@ async function bootstrap() {
     origin: ['http://client', 'http://localhost:3000', 'http://localhost:8000', 'http://nginx:80'],
     credentials: true,
   });
+  
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.use(cookieParser());
   const config = new DocumentBuilder()

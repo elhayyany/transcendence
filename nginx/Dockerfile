@@ -1,5 +1,7 @@
 FROM nginx
-COPY ./default.conf /etc/nginx/conf.d/default.conf
+# COPY ./default.conf /etc/nginx/conf.d/default.conf
 # RUN rm -rf /usr/share/nginx/html/*
 # COPY ./build /usr/share/nginx/html
-CMD ["nginx", "-g", "daemon off;"]
+RUN echo "sleep 15 && nginx -g 'daemon off;'" > init.sh
+RUN chmod +x init.sh
+CMD ["bash", "init.sh"]init.sh
