@@ -7,5 +7,6 @@ import { WsGuard } from 'src/auth/guard';
 @Module({
   // imports: [WsGuard],
   providers: [EventsGateway, ChatModule],
+  exports: [EventsGateway],
 })
 export class EventsModule {}

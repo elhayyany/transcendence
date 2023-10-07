@@ -11,6 +11,7 @@ import {
   UnauthorizedException,
   HttpCode,
 } from '@nestjs/common';
+import { JwtGard } from 'src/auth/guard';
 import { AuthService } from './auth.service';
 import { AuthDto } from 'src/dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -70,6 +71,7 @@ export class GoogleAuthController {
 }
 
 
+@UseGuards(JwtGard)
 @Controller("logout")
 export class LogoutController {
   constructor(
@@ -78,13 +80,14 @@ export class LogoutController {
   ) {}
   @Get()
   async Logout(@Req() req, @Res() res) {
-    console.log('logout');
+
+    // what if the user saved his token?
     await res.clearCookie("jwt");
     // set the user to offline
     //! close all sockets
     await this.events.handleDisconnect(req.user.id);
 
-    res.redirect("http://locallhost:8000/");
+    res.redirect("http://localhost:8000/");
   }
 }
 

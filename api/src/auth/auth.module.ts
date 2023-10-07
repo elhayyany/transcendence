@@ -8,12 +8,15 @@ import { JwtStartegy } from './startegy';
 import { GoogleOAuthGuard } from './guard/google-oauth.guard';
 import { GoogleStrategy } from './google/google.strategy';
 import { GoogleAuthController } from './auth.controller';
+import { LogoutController } from './auth.controller';
 import { WsGuard } from './guard';
+import { EventsGateway } from 'src/events/events.gateway';
+
 // import { UserModule } from 'src/user/user.module';
 @Module({
   imports: [PrismaModule, JwtModule.register({})],
-  controllers: [AuthController, GoogleAuthController],
-  providers: [AuthService, FortyTwoStrategy, JwtStartegy, GoogleStrategy, WsGuard],
+  controllers: [AuthController, GoogleAuthController, LogoutController],
+  providers: [AuthService, FortyTwoStrategy, JwtStartegy, GoogleStrategy, WsGuard, EventsGateway],
   exports: [WsGuard],
 })
 export class AuthModule {}

@@ -25,8 +25,8 @@ services:
 
   client:
     volumes:
-      - ./Transcendence:/app
-    build: ./Transcendence
+      - ./client:/app
+    build: ./client
     depends_on:
       - api
     
@@ -34,8 +34,8 @@ services:
 
   api:
     volumes:
-      - ./transcendence:/app
+      - ./api:/app
     depends_on:
       - devdb
-    build: ./Transcendence
+    build: ./api
 
