@@ -39,8 +39,6 @@ export class JwtStartegy extends PassportStrategy(Strategy, 'jwt') {
   }
 }
 
-
-
 @Injectable()
 export class JwtTwoFactorStrategy extends PassportStrategy(
   Strategy,

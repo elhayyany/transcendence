@@ -45,8 +45,8 @@ export class UserController {
   }
 
   @Get('chatrooms')
-  getAllchatRoomsId(@Query('id') id:number) {
-    return this.userService.getallchatrooms(id).then((data) => data);
+  async getAllchatRoomsId(@Query('id') id:number) {
+    return this.userService.getallchatrooms(id);
   }
   @Get('me/friendrequests')
   getFriendRequests(@Req() req) {
@@ -60,7 +60,7 @@ export class UserController {
 
   @Get('me/blocklist')
   getBlockList(@Req() req) {
-    return this.userService.getBlockedUsers(req);
+    return this.userService.getBlockedUsers(req.user.id);
   }
 
   @Get('me/getnotifications')
@@ -88,12 +88,12 @@ export class UserController {
   }
 
   @Post('block')
-  blockUser(@Req() req: any, @Query('id') id: number) {
+  blockUser(@Req() req: any, @Body('id') id: number) {
     return this.userService.blockUser(req, id);
   }
 
   @Post('unblock')
-  unblockUser(@Req() req: any, @Query('id') id: number) {
+  unblockUser(@Req() req: any, @Body('id') id: number) {
     return this.userService.unblockUser(req, id);
   }
 
@@ -106,6 +106,17 @@ export class UserController {
   fillFriendRequest(@Req() req: any, @Body() body: FillRequestDto) {
     return this.userService.fillFriendRequest(req, body);
   }
+
+  @Post('/cancelfriendrequest')
+  cancelFriendRequest(@Req() req: any, @Body() body: FillRequestDto) {
+    return this.userService.cancelFriendRequest(req, body);
+  }
+
+  @Post('/removefriend')
+  removeFriend(@Req() req: any, @Body() body: FillRequestDto) {
+    return this.userService.removeFriend(req, body);
+  }
+
 
   @Post('readnotification')
   readNotification(@Req() req: any, @Body() body: UpdateNotificationsDto) {

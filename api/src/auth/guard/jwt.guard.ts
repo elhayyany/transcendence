@@ -47,5 +47,4 @@ export class WsGuard implements CanActivate {
     throw new WsException('invalid user credentials');
     return false;
   }
-
 }

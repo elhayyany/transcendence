@@ -2,7 +2,7 @@ import { IS_NOT_EMPTY, IsAlphanumeric, IsEmail, IsNotEmpty, IsNumber, IsString }
 
 export class ChatRoomBody {
     id: number;
-    message: string;
+    message: string;    
     @IsString()
     @IsNotEmpty()
     name?: string;
@@ -11,5 +11,7 @@ export class ChatRoomBody {
     @IsNumber()
     @IsNotEmpty()
     password?: string;
+    status?: string;
     receiver: number;
+    sender: number;
 }

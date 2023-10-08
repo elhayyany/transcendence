@@ -1,4 +1,4 @@
-import { IS_NOT_EMPTY, IsAlphanumeric, IsArray,IsBoolean, IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString, isArray } from 'class-validator';
+import { IS_NOT_EMPTY, IsAlphanumeric, IsArray,IsBoolean, IsEmail, IsEmpty, IsNotEmpty, IsNumber, IsOptional, IsString, isArray, IsUrl } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { isInt16Array, isInt32Array } from 'util/types';
@@ -25,6 +25,22 @@ export class UserTfaDto {
     twoFactorAuthenticationSecret: string;
 }
 
+export class NotificationDto{
+    userId: number;
+    from: number;
+    photo: string;
+    type: string;
+    message: string;
+    read: boolean;
+    roomid?: number;
+}
+
+export class messageDto {
+    id: number;
+    message: string;
+    sender: number;
+    roomid: number;
+}
 
 export class GameRecords {
     @IsNumber()
@@ -50,43 +66,41 @@ export class GameRecords {
     loserId: number;
 }
 
-class chatroomUserDto {
-    id: number;
-    name: string;
-    avatar: string;
-    isdm: boolean;
-    receiver: number;
-}
 
 
 export class UserUpdateDto {
-  @IsString()
-  @IsOptional()
-  @ApiProperty()
-  bio?: string;
-  @IsString()
-  @IsOptional()
-  @ApiProperty()
-  photo?: string;
-  @IsString()
-  @IsOptional()
-  @ApiProperty()
-  username?: string;
-  @IsString()
-  @IsOptional()
-  @ApiProperty()
-  firstname?: string;
-  @IsString()
-  @IsOptional()
-  @ApiProperty()
-  lastname?: string;
-  @IsOptional()
-  @ApiProperty()
-  isTowFactorAuthEnabled: boolean;
-  @IsString()
-  @IsOptional()
-  @ApiProperty()
-  twoFactorAuthSecret: string;
+    @IsString()
+    @IsOptional()
+    @ApiProperty()
+    bio?: string;
+    @IsString()
+    @IsOptional()
+    @ApiProperty()
+    photo?: string;
+    @IsString()
+    @IsOptional()
+    @ApiProperty()
+    username?: string;
+    @IsString()
+    @IsOptional()
+    @ApiProperty()
+    firstname?: string;
+    @IsString()
+    @IsOptional()
+    @ApiProperty()
+    lastname?: string;
+    @IsUrl()
+    @IsOptional()
+    @ApiProperty()
+    github?: string;
+    @IsUrl()
+    @IsOptional()
+    @ApiProperty()
+    linkedin?: string;
+    @IsUrl()
+    @IsOptional()
+    @ApiProperty()
+    instagram?: string;
 }
 
 
@@ -113,4 +127,36 @@ export class UpdateNotificationsDto {
     @IsArray()
     @ApiProperty()
     id: number[];
+}
+
+export class userevents{
+    id: number;
+    roomid: number;
+}
+
+export class  joinroomdto{
+    @IsNumber()
+    @ApiProperty()
+    id: number;
+    @ApiProperty()
+    status: string;
+    // @IsEmpty()
+    @ApiProperty()
+    password?: string;
+}
+export class chatroomRequest {
+    roomid: number;
+    userid: number;
+}
+
+export class LinkDto {
+    @IsUrl()
+    @ApiProperty()
+    link: string;
+}
+
+export enum systemclass{
+    OWNER = 3,    
+    ADMIN = 2,
+    NORMAL = 1,
 }

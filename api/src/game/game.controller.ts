@@ -8,8 +8,4 @@ import { game } from '@prisma/client';
 @Controller('game')
 export class GameController {
     constructor(private readonly gameservice: GameService) {}
-    @Post('gamerecord')
-    async addGameRecord(@Body() body: GameRecords) {
-        return this.gameservice.createGameRecord(body);
-    }
 }

@@ -19,6 +19,8 @@ import { RouterModule } from '@nestjs/core';
 import { Injectable } from '@nestjs/common';
 import { StreamGateway } from './stream.gateway';
 import { ConfigService } from '@nestjs/config';
+import { join } from 'path';
+import { EventsGateway } from 'src/events/events.gateway';
 
 
 interface Ball {
@@ -50,13 +52,15 @@ interface Room {
 	done: boolean;
 }
 
+
 const socketConfig = {
-  cors: {
-    origin: ['http://client', 'http://localhost:3000', 'http://localhost:8000', 'http://nginx:80'],
-    credentials: true,
-  },
-  namespace: 'game',
+	cors: {
+		origin: ['http://client', 'http://10.14.8.7:5173', 'http://10.14.8.7:3000'],
+		credentials: true
+	},
+	namespace: 'game'
 };
+
 
 @Injectable()
 @WebSocketGateway( socketConfig )
@@ -65,7 +69,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	constructor(
 		private gameService: GameService,
 		private streamGateway: StreamGateway,
-		private config: ConfigService
+		private config: ConfigService,
+		private event: EventsGateway
 	) {}
 
 	@WebSocketServer()
@@ -74,6 +79,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	private queue: Player[] = [];
 
 	private roomNames: String[] = [];
+	private map = new Map<Socket, number>();
+	private challengers = new Map<number, Socket>();
+	private ids: number[] = [];
 
 	async handleConnection(client: Socket) : Promise<void> {
 		const cookie = client.handshake.headers.cookie;
@@ -81,10 +89,23 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 		const jwtPayload : any = jwt.verify(jwtToken, this.config.get('JWT_SECRET'));
 		const userId = jwtPayload.sub;
+		if (this.ids.includes(userId)) {
+			console.log("user already connected");
+			client.emit('inGame');
+			client.disconnect();
+		}
+		else {
+			this.map.set(client, userId);
+			this.ids.push(userId);
+			console.log(`connected ====> ${userId}`);
+		}
+	}
 
+	@SubscribeMessage("join")
+	async joinQueue(@ConnectedSocket() client: Socket) {
 		let player: Player = {
 			socket: client,
-			id: userId,
+			id: this.map.get(client),
 			side: !(this.queue.length % 2) ? "left" : "right"
 		}
 
@@ -101,11 +122,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				players: players,
 				data: {
 					ball: {
-						x: 500, 
+						x: 500,
 						y: 300,
-						velocityX: 3,
+						velocityX: 5,
 						velocityY: 0,
-						speed: 3,
+						speed: 5,
 					},
 					leftPlayerY: 250,
 					rightPlayerY: 250,
@@ -130,6 +151,99 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 	}
 
+	@SubscribeMessage("spectate")
+	async watchMatch(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
+		console.log("watch");
+		client.join(data.roomName);
+		const room = this.getRoomByName(data.roomName);
+		console.log(data.roomName);
+		if (room) {
+			console.log("joined room")
+			client.emit("join_room", {
+				data: room.data,
+				roomName: room.roomName,
+				playerOneId: room.players[0].id,
+				playerTwoId: room.players[1].id
+			});
+		}
+		else {
+			console.log("no room");
+			client.emit("no_room");
+		}
+	}
+	
+
+	@SubscribeMessage("challenge")
+	async challengeUser(@MessageBody() data: number, @ConnectedSocket() client: Socket) {
+		// console.log('challenge');
+		await this.event.sendGameRequest(this.map.get(client), data);
+		this.challengers.set(this.map.get(client), client)
+		
+	}
+
+	@SubscribeMessage("acceptChallenge")
+	async acceptChallenge(@MessageBody() data: number, @ConnectedSocket() client: Socket) {
+		if (this.challengers.has(data)) {
+			const players = [
+				{
+					socket: this.challengers.get(data),
+					id: data,
+					side: "left"
+				},
+				{
+					socket: client,
+					id: this.map.get(client),
+					side: "right"
+				}
+			]
+
+			const roomName: string = this.createNewRoom();
+
+			let room: Room = {
+				roomName: roomName,
+				players: players,
+				data: {
+					ball: {
+						x: 500,
+						y: 300,
+						velocityX: 5,
+						velocityY: 0,
+						speed: 5,
+					},
+					leftPlayerY: 250,
+					rightPlayerY: 250,
+					leftScore: 0,
+					rightScore: 0
+				},
+				done: false
+			};
+
+			players.forEach(player => {
+				player.socket.join(roomName);
+			});
+
+			this.server.to(room.roomName).emit("join_room", {
+				data: room.data,
+				roomName: room.roomName,
+				playerOneId: players[0].id,
+				playerTwoId: players[1].id
+			});
+			await this.gameService.addRoom(room);
+			await this.streamGateway.addRoom(room);
+		}
+		else {
+			this.server.emit('out');
+			this.event.sendnotify('out', this.map.get(client))
+		}
+	}
+
+	@SubscribeMessage('reject')
+  	async reject(@ConnectedSocket() client: Socket, @MessageBody() userId: number) {
+    	this.event.sendnotify('rejected', userId)
+		client.disconnect();
+    }
+
+
 	private createNewRoom() : string {
 		let roomName: string;
 
@@ -144,7 +258,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	// handle disconnection of one of the players
 	handleDisconnect(client: Socket) {
-		console.log("handle Dis");
+		console.log("DISCONNECTION");
+		this.queue = this.queue.filter(player => (player.socket !== client))
+		this.ids = this.ids.filter(id => (id !== this.map.get(client)));
+		this.challengers.delete(this.map.get(client));
+		this.map.delete(client);
 	}
 
 	@Interval(10)
@@ -183,7 +301,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				room.done === false)
 			{
 				room.done = true;
-				console.log("MAAAMAAA SALIIIT");
+				console.log("MAAAMAAA SALIIIT 1");
 				const body = {
 					player1Id: room.players[0].id,
 					player2Id: room.players[1].id,
@@ -198,6 +316,26 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				await this.gameService.removeRoom(room.roomName);
 				await this.streamGateway.removeRoom(room.roomName);
 			}
+			// if ((room.players[0].socket.disconnected || room.players[1].socket.disconnected) && 
+			// 	room.done === false)
+			// {
+			// 	room.done = true;
+			// 	console.log("MAAAMAAA SALIIIT 2");
+			// 	const body = {
+			// 		player1Id: room.players[0].id,
+			// 		player2Id: room.players[1].id,
+			// 		player1Score: room.data.leftScore,
+			// 		player2Score: room.data.rightScore,
+			// 		type: "classic",
+			// 		winnerId: (room.players[1].socket.disconnected) ? room.players[0].id : room.players[1].id,
+			// 		loserId: (room.players[0].socket.disconnected) ? room.players[1].id : room.players[0].id
+			// 	};
+			// 	await this.gameService.createGameRecord(body);
+			// 	this.server.to(room.roomName).emit("endMatch");
+			// 	await this.gameService.removeRoom(room.roomName);
+			// 	await this.streamGateway.removeRoom(room.roomName);
+			// }
+
 		}
 	}
 
@@ -236,12 +374,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			return ;
 		}
 
-		if (client === room.players[0].socket) {
+		if (client === room.players[0].socket && data.posY <= 520) {
 			room.data.leftPlayerY = data.posY;
 		}
-		else if (client === room.players[1].socket) {
-			if (data.posY <= 520)
-				room.data.rightPlayerY = data.posY;
+		else if (client === room.players[1].socket && data.posY <= 520) {
+			room.data.rightPlayerY = data.posY;
 		}
 		this.server.to(data.roomName).emit("update", room.data);
 	}
@@ -254,6 +391,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 		return undefined;
 	}
+
+
 
 }
 

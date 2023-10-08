@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
 import { Prisma } from '@prisma/client';
+import { triggerAsyncId } from 'async_hooks';
 
 @Injectable()
 export class PrismaService extends PrismaClient {
@@ -31,15 +32,31 @@ export class PrismaTypes {
   }
 
   
+  static blocklist: Prisma.UserSelect = {
+    blockedBy: {
+      select: {
+        id: true,
+      }
+    },
+    blockedUsers: {
+      select: {
+        id: true,
+      }
+    }
+  }
   static UserBasicIfosSelect: Prisma.UserSelect = {
     id: true,
     firstname: true,
     lastname: true,
+    fullname: true,
     username: true,
     photo: true,
     online: true,
     wins: true,
     losses: true,
+    github: true,
+    linkedin: true,
+    instagram: true,
   }
 
   static BlockedIfosSelect: Prisma.UserSelect = {
@@ -57,5 +74,4 @@ export class PrismaTypes {
       },
     }
   }
-
 }

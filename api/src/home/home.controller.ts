@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, Req, UseGuards, HttpStatus } from '@nestjs
 import { AuthGuard } from '@nestjs/passport';
 import { JwtGard } from 'src/auth/guard';
 
-// @UseGuards(JwtGard)
+@UseGuards(JwtGard)
 @Controller()
 export class HomeController {
   @Get(['/', '/home'])

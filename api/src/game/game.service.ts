@@ -51,7 +51,6 @@ export class GameService {
 	
 
 	async createGameRecord(body: GameRecords) {
-		
 		try {
             await this.addToWins(body.winnerId);
             await this.addToLosses(body.loserId);

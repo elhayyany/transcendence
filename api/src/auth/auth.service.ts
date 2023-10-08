@@ -13,7 +13,6 @@ import { buffer } from 'stream/consumers';
 import { authenticator } from 'otplib';
 import { toFileStream } from 'qrcode';
 import { Response } from 'express';
-// import { UserService } from 'src/user/user.service';
 import { UserTfaDto } from 'src/dto/all.dto';
 import TokenPayload from './interfaces/tokenPayload.interface';
 
@@ -93,7 +92,25 @@ export class AuthService {
     return `Authentication=; HttpOnly; Path=/; Max-Age=0`;
   }
 
-  ///
+
+  async verifyToken(token: string) {
+    const payload: any = await this.jwtService.verify(token, {
+      secret: this.config.get('JWT_SECRET'),
+    });
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: payload.sub,
+        email: payload.email,
+      },
+    });
+    if (user) {
+      delete user.token;
+      delete user.password;
+      delete user.email;
+    }
+    return user;
+  }
+  
   downloadimg(url: string, id: number)
   {
     const filepath = path.join(__dirname, '../../src/chat/img/');
@@ -112,6 +129,7 @@ export class AuthService {
           firstname: req.user.firstName,
           lastname: req.user.lastName,
           username: req.user.email.split('@')[0],
+          bio: "Hello there, I am Playing Pong",
       };
       const user = await this.prisma.user.create({
         data: userInput,

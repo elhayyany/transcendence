@@ -1,4 +1,6 @@
 import {
+  MessageBody,
+  SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
@@ -6,8 +8,9 @@ import { Server, Socket } from 'socket.io';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
-import { Global, Injectable } from '@nestjs/common';
-
+import { CanActivate, ExecutionContext, Global, Injectable } from '@nestjs/common';
+import { NotificationDto } from 'src/dto';
+import { AuthService } from 'src/auth/auth.service';
 const socketConfig = {
   cors: {
     origin: ['http://client', 'http://localhost:3000', 'http://localhost:8000', 'http://nginx:80'],
@@ -43,7 +46,6 @@ const validateUser = async (config: ConfigService, prisma: PrismaService, status
   }
 }
 
-
 @Injectable()
 @WebSocketGateway(socketConfig)
 export class EventsGateway {
@@ -56,8 +58,8 @@ export class EventsGateway {
 
   async handleConnection(client: Socket): Promise<void> {
     try {
-      const cookies = await client.handshake.headers.cookie;
-      let userID;
+      const cookies = client.handshake.headers.cookie;
+      let userID: number;
       if (cookies) {
         const token = client.handshake.headers.cookie.split("=")[1];
         userID = await this.validateUser(this.config, this.prisma, true, token);
@@ -77,9 +79,19 @@ export class EventsGateway {
     }
   }
 
+  // @SubscribeMessage('reject')
+  // async reject(@MessageBody() userId: number) {
+  //   const sockets = this.onlineUsers.get(userId);
+  //   if (sockets) {
+  //     console.log("reject");
+  //     this.server.to(sockets).emit('rejected');
+  //     this.onlineUsers.delete(userId)
+  //   }
+  // }
+
   async handleDisconnect(client: Socket): Promise<void> {
     try {
-      const cookies = await client.handshake.headers.cookie;
+      const cookies = client.handshake.headers.cookie;
       if (cookies) {
         const token = cookies.split("=")[1];
         const userID = await this.validateUser(this.config, this.prisma, true, token, null);
@@ -101,19 +113,33 @@ export class EventsGateway {
     }
   }
 
+  // async notify(data: any, user)
 
-  async hanldleSendNotification(clientId: number, senderId: number, data: any) {
+  async sendnotify(val: string, userid: number) {
+    this.server.to(this.onlineUsers.get(userid)).emit(val);
+  }
+
+  async sendGameRequest(oppId: number, userId: number) {
+    this.server.to(this.onlineUsers.get(userId)).emit("challenge", oppId);
+  }
+
+
+  async hanldleSendNotification(clientId: number, senderId: number, data: NotificationDto) {
     try {
+      console.log('haaa')
       await this.prisma.notification.create({
         data: {
           user: {
             connect: {
-              id: clientId,
+              id: +clientId,
             }
           },
           type: data.type,
           from: senderId,
-          data: data,
+          photo: data.photo,
+          roomid: data.roomid,
+          message: data.message,
+          username: "",
         },
       });
       await this.prisma.user.update({
@@ -126,6 +152,7 @@ export class EventsGateway {
       });
       const sockets = this.onlineUsers.get(clientId);
       if (sockets) {
+        console.log("sending notification");
         this.server.to(sockets).emit('notification', data);
       }
     } catch (error) {
